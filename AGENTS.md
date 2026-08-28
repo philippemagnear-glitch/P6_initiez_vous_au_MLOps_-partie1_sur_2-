@@ -88,6 +88,16 @@ Si tu me demandes de modifier manuellement du code, ne donne pas quelques lignes
 
 Indique clairement le bloc complet à remplacer et son remplacement complet.
 
+### Organisation des notebooks
+
+Lorsqu'une modification concerne une section thématique d'un notebook :
+
+- ajoute ou déplace les cellules dans cette section, immédiatement après l'analyse qui justifie leur contenu ;
+- ne place pas le code dans une autre partie du notebook uniquement parce qu'elle est plus simple à modifier ;
+- conserve un ordre d'exécution logique de haut en bas, notamment entre le chargement, le nettoyage, l'encodage et l'analyse ;
+- ajoute un titre Markdown explicite lorsque plusieurs traitements distincts se suivent ;
+- évite de dupliquer une cellule pour la rendre visible à plusieurs endroits : déplace-la et adapte les dépendances si nécessaire.
+
 ## 6. Python et dépendances
 
 Avant toute installation, vérifie comment le projet gère actuellement ses dépendances.
