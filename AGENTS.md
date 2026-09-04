@@ -23,6 +23,38 @@ Ne commence jamais une modification immédiatement.
 
 Fais ensuite uniquement ce qui a été validé.
 
+### Analyse des tables et préparation des jointures
+
+Pour chaque nouvelle table à intégrer, procède obligatoirement par étapes et ne
+crée aucun notebook avant la validation complète du traitement proposé.
+
+1. Inspecte la table en lecture seule :
+   - signification des colonnes ;
+   - nombre de lignes et d'identifiants uniques ;
+   - valeurs manquantes et doublons ;
+   - catégories et distributions importantes ;
+   - clés orphelines par rapport à la table parente.
+2. Présente les résultats de cette analyse dans le chat, sans modifier le projet.
+3. Réfléchis avec moi au traitement minimal à appliquer :
+   - colonnes conservées ;
+   - colonnes transformées et méthode de transformation ;
+   - colonnes écartées et justification ;
+   - nombre limité de nouvelles variables ;
+   - clé, cardinalité et type de jointure ;
+   - traitement des valeurs manquantes.
+4. Fournis dans le chat un récapitulatif complet du traitement proposé et attends
+   ma validation explicite.
+5. Après cette validation seulement, crée ou modifie le notebook, exécute-le et
+   vérifie au minimum :
+   - le nombre de lignes avant et après la jointure ;
+   - l'unicité de la clé attendue ;
+   - l'alignement des jeux train et test lorsqu'ils sont concernés ;
+   - un aperçu avec `head()` du fichier réellement exporté.
+
+Lorsque plusieurs tables sont reliées à une même table parente, analyse et fais
+valider chaque table enfant séparément avant son implémentation. Ne regroupe pas
+leur analyse dans une seule décision globale.
+
 ## 3. Niveau attendu
 
 Ce projet est réalisé dans le cadre d'une formation OpenClassrooms RNCP7 IA Engineer.
