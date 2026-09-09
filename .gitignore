@@ -23,6 +23,11 @@ Thumbs.db
 # notebook
 .ipynb_checkpoints/
 
-# Folder
+# Data
 data/raw/
 data/processed/
+
+# MLflow
+mlflow.db
+mlruns/
+mlartifacts/
