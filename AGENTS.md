@@ -23,6 +23,19 @@ Ne commence jamais une modification immédiatement.
 
 Fais ensuite uniquement ce qui a été validé.
 
+### Exécution des notebooks
+
+Après une modification de notebook :
+
+- ne l'exécute pas automatiquement ;
+- vérifie seulement que le fichier JSON et la syntaxe Python sont valides ;
+- laisse l'utilisateur exécuter les cellules et contrôler les résultats ;
+- n'exécute le notebook que si l'utilisateur le demande explicitement ;
+- ne crée aucun run MLflow sans autorisation explicite.
+
+Lorsqu'une règle spécifique demande une vérification après exécution, demande
+d'abord l'autorisation avant de lancer le notebook.
+
 ### Analyse des tables et préparation des jointures
 
 Pour chaque nouvelle table à intégrer, procède obligatoirement par étapes et ne
@@ -44,8 +57,8 @@ crée aucun notebook avant la validation complète du traitement proposé.
    - traitement des valeurs manquantes.
 4. Fournis dans le chat un récapitulatif complet du traitement proposé et attends
    ma validation explicite.
-5. Après cette validation seulement, crée ou modifie le notebook, exécute-le et
-   vérifie au minimum :
+5. Après cette validation seulement, crée ou modifie le notebook. Exécute-le
+   uniquement avec l'autorisation explicite de l'utilisateur, puis vérifie au minimum :
    - le nombre de lignes avant et après la jointure ;
    - l'unicité de la clé attendue ;
    - l'alignement des jeux train et test lorsqu'ils sont concernés ;
@@ -54,6 +67,29 @@ crée aucun notebook avant la validation complète du traitement proposé.
 Lorsque plusieurs tables sont reliées à une même table parente, analyse et fais
 valider chaque table enfant séparément avant son implémentation. Ne regroupe pas
 leur analyse dans une seule décision globale.
+
+### Modélisation et MLflow
+
+Avant d'ajouter un nouveau modèle :
+
+1. inspecte le notebook et les variables déjà disponibles ;
+2. propose le modèle, son prétraitement, ses paramètres et les métriques ;
+3. attends la validation avant de modifier le notebook.
+
+Pour comparer les modèles :
+
+- réutilise la même séparation entraînement-validation ;
+- utilise le pipeline commun de préparation ;
+- adapte seulement les étapes réellement nécessaires au modèle, par exemple la
+  standardisation ;
+- conserve l'imputation médiane tant qu'un autre traitement n'a pas été validé ;
+- n'utilise pas l'accuracy ;
+- calcule explicitement le recall de la classe minoritaire avec `pos_label=1` ;
+- conserve par défaut `roc_auc`, `recall`, `f1_score`, `fn` et `fp` ;
+- utilise un suivi MLflow manuel et les mêmes noms de métriques entre les runs ;
+- effectue la comparaison finale dans l'interface MLflow ;
+- n'utilise pas `autolog()`, GridSearchCV, l'optimisation du seuil, Model Registry
+  ou Serving sans demande et validation explicites.
 
 ## 3. Niveau attendu
 
@@ -122,13 +158,42 @@ Indique clairement le bloc complet à remplacer et son remplacement complet.
 
 ### Organisation des notebooks
 
-Lorsqu'une modification concerne une section thématique d'un notebook :
+Avant de créer ou de réorganiser un notebook, présente la structure des cellules
+prévue et attends sa validation.
 
-- ajoute ou déplace les cellules dans cette section, immédiatement après l'analyse qui justifie leur contenu ;
-- ne place pas le code dans une autre partie du notebook uniquement parce qu'elle est plus simple à modifier ;
-- conserve un ordre d'exécution logique de haut en bas, notamment entre le chargement, le nettoyage, l'encodage et l'analyse ;
-- ajoute un titre Markdown explicite lorsque plusieurs traitements distincts se suivent ;
-- évite de dupliquer une cellule pour la rendre visible à plusieurs endroits : déplace-la et adapte les dépendances si nécessaire.
+Organise chaque notebook avec un flux simple, lisible et exécutable de haut en bas :
+
+1. un titre Markdown court indiquant clairement l'objectif ;
+2. une première cellule de code regroupant, lorsque cela s'applique :
+   - les imports ;
+   - les chemins et constantes globales ;
+   - le chargement et les validations essentielles des données ;
+   - la définition des variables principales ;
+   - la séparation des données ;
+3. une cellule suivante pour les traitements, fonctions ou pipelines réellement
+   communs aux étapes suivantes ;
+4. des sections thématiques contenant chacune une tâche, une analyse ou un modèle
+   clairement identifié.
+
+Règles générales :
+
+- regroupe le code commun au début du notebook au lieu de le répéter ;
+- ne factorise une logique que si elle est réellement réutilisée ;
+- conserve dans chaque cellule thématique sa configuration spécifique ;
+- place la configuration des données avec le chargement des données ;
+- place la configuration d'un modèle dans la cellule de ce modèle ;
+- utilise une cellule de code par modèle lorsqu'un notebook compare plusieurs modèles ;
+- évite de disperser une même étape dans plusieurs endroits du notebook ;
+- évite les cellules inutilement longues, le texte excessif et les commentaires
+  qui répètent simplement le code ;
+- ajoute un titre Markdown court entre deux traitements distincts ;
+- place chaque analyse immédiatement avant le traitement qu'elle justifie ;
+- évite de dupliquer une cellule : déplace-la ou centralise uniquement la partie
+  réellement commune ;
+- conserve des noms de variables cohérents entre les sections comparables ;
+- après une réorganisation non exécutée, supprime les anciennes sorties et remets
+  les compteurs d'exécution à `null` afin de ne pas afficher des résultats qui ne
+  correspondent plus au code.
 
 ## 6. Python et dépendances
 
