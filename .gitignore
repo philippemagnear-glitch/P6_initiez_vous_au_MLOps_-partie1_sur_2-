@@ -30,4 +30,4 @@ data/processed/
 # MLflow
 mlflow.db
 mlruns/
-mlartifacts/
+mlartifacts/*.zip
